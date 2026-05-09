@@ -1,0 +1,14 @@
+  ┌───────────────────────────┬─────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┐
+  │ ส่วนประกอบ (System Layer)    │ รายละเอียดทางเทคนิค (Technical Details)             │ หน้าที่สำคัญ (Primary Function)                                        │
+  ├───────────────────────────┼─────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────┤
+  │ User Interface (Frontend) │ Next.js (App Router), React, Tailwind CSS   │ หน้าจอจัดการรีวิว, Dashboard แสดงผลวิเคราะห์ และระบบแก้ไขคำตอบ                             │
+  │ Server Logic (Backend)    │ Next.js API Routes (Node.js API Layer)      │ จัดการคำขอ (Requests), เชื่อมต่อ AI API และระบบตรวจสอบคำตอบ                     │
+  │ Main AI Model (LLM)       │ Llama 3.3 (70B) - Versatile (ผ่าน Groq API)    | วิเคราะห์ความรู้สึก (Sentiment), แยกหัวข้อ (Aspect) และร่างคำตอบภาษาไทย       │
+  │ Embedding Model           │ Xenova / all-MiniLM-L6-v2 (Transformers.js) │ แปลงข้อความเป็นเวกเตอร์ (Vectorization) เพื่อใช้เปรียบเทียบความคล้ายคลึง               │
+  │ AI Architecture           │ RAG (Retrieval-Augmented Generation)        │ ดึงตัวอย่างคำตอบที่ถูกต้องจากร้านค้ามาสอน AI ก่อนจะให้ร่างคำตอบใหม่                                │
+  │ Similarity Logic          │ Cosine Similarity (Vector Search)           │ ค้นหาตัวอย่างรีวิวในอดีตที่ "เหมือน" กับรีวิวปัจจุบันมากที่สุดจากฐานข้อมูล                                 │
+  │ NLP Engine                │ Intl.Segmenter + Custom Heuristics          │ ตัดคำภาษาไทยและวิเคราะห์คำเชื่อม (เช่น "แต่", "ไม่") เพื่อระบุบริบทของประโยค                         │
+  │ Brand Management          │ Multi-brand Personality Config (JSON-based) │ กำหนดบุคลิก (Tone of Voice) ให้ AI ตอบตามร้านนั้นๆ (เช่น คาเฟ่, อาหารอีสาน)     │
+  │ Database                  │ File-based (JSON Storage)                   │ เก็บข้อมูลเมนู, รายชื่อร้าน และข้อมูลตัวอย่างการเทรน AI (Training Set)       │
+  │
+  └───────────────────────────┴─────────────────────────────────────────────┴───────────────────────────────────────────────────────────────────┘

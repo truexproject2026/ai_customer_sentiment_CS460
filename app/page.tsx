@@ -499,20 +499,20 @@ export default function Home() {
                 <div className="p-6 border-b border-slate-50 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <MessageSquare size={18} className="text-slate-400" />
-                    <h2 className="font-extrabold text-slate-900">สำรวจรีวิว</h2>
+                    <h2 className="font-extrabold text-slate-900">Review Explorer</h2>
                   </div>
                   <div className="flex bg-slate-100 p-1 rounded-xl">
                     <button
                       onClick={() => setReviewSource("huggingface")}
                       className={`px-3 py-1.5 text-[10px] font-bold rounded-lg transition-all ${reviewSource === "huggingface" ? "bg-white shadow-sm text-blue-600" : "text-slate-500"}`}
                     >
-                      ทั่วไป
+                      ฐานข้อมูล (Default)
                     </button>
                     <button
                       onClick={() => setReviewSource("custom")}
                       className={`px-3 py-1.5 text-[10px] font-bold rounded-lg transition-all ${reviewSource === "custom" ? "bg-white shadow-sm text-blue-600" : "text-slate-500"}`}
                     >
-                      ไฟล์นำเข้า
+                      ไฟล์นำเข้า (Import)
                     </button>
                   </div>
                 </div>
@@ -524,8 +524,8 @@ export default function Home() {
                       <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-200 transition-all cursor-pointer group">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload size={24} className="text-slate-400 group-hover:text-blue-500 mb-2 transition-colors" />
-                          <p className="text-xs font-bold text-slate-500 group-hover:text-blue-600">
-                            {isUploading ? "กำลังนำเข้าข้อมูล..." : "นำเข้า CSV / JSON"}
+                          <p className="text-xs font-bold text-slate-500 group-hover:text-blue-600 text-center px-4">
+                            {isUploading ? "กำลังนำเข้าข้อมูล..." : "คลิกเพื่ออัปโหลด CSV / JSON\n(Custom Dataset)"}
                           </p>
                         </div>
                         <input type="file" accept=".csv,.json" onChange={handleFileUpload} className="hidden" disabled={isUploading} />
@@ -537,7 +537,7 @@ export default function Home() {
                   <div className="mb-6">
                     <div className="relative group">
                       <textarea
-                        placeholder="พิมพ์หรือวางรีวิวเพื่อวิเคราะห์..."
+                        placeholder="วางข้อความรีวิวที่ต้องการให้ AI วิเคราะห์ที่นี่..."
                         value={customComment}
                         onChange={(e) => setCustomComment(e.target.value)}
                         className="w-full p-4 bg-slate-50 border-none rounded-2xl text-sm text-slate-900 placeholder:text-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all resize-none h-24"
@@ -559,7 +559,7 @@ export default function Home() {
                     ) : reviews.length === 0 ? (
                       <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-center">
                         <AlertTriangle size={20} className="mx-auto text-amber-500 mb-2" />
-                        <p className="text-[10px] font-bold text-amber-700 uppercase">ไม่มีข้อมูลรีวิว</p>
+                        <p className="text-[10px] font-bold text-amber-700 uppercase">ไม่พบข้อมูลรีวิวในขณะนี้</p>
                       </div>
                     ) : reviews.map((r, i) => {
                       const isAnalyzed = results.some(res => res.comment === r.comment);
@@ -601,9 +601,9 @@ export default function Home() {
                     disabled={reviewDone || reviewsLoading}
                     className="flex items-center gap-2 text-[10px] font-extrabold text-blue-600 uppercase tracking-widest hover:gap-3 transition-all disabled:opacity-30"
                   >
-                    โหลดเพิ่มเติม <ChevronRight size={14} />
+                    โหลดรีวิวเพิ่ม (Load More) <ChevronRight size={14} />
                   </button>
-                  <span className="text-[9px] font-bold text-slate-400">ลำดับ: {reviewCursor}</span>
+                  <span className="text-[9px] font-bold text-slate-400">Index: {reviewCursor}</span>
                 </div>
               </div>
             </div>
@@ -614,12 +614,12 @@ export default function Home() {
                 <div className="p-6 border-b border-slate-50 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={18} className="text-green-500" />
-                    <h2 className="font-extrabold text-slate-900">รายการรอตอบ</h2>
+                    <h2 className="font-extrabold text-slate-900">Pending Approvals</h2>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-bold text-slate-500">
                       <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                      รอนุมัติ: {results.filter(r => r.status === "pending").length}
+                      รอดำเนินการ: {results.filter(r => r.status === "pending").length}
                     </div>
                   </div>
                 </div>

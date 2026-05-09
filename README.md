@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 AI Customer Sentiment & Auto-Reply System
 
-## Getting Started
+ระบบวิเคราะห์ความรู้สึกของลูกค้าและร่างคำตอบอัตโนมัติที่คงบุคลิกของแบรนด์ (Brand Personality) โดยใช้พลังของ **Llama 3.3 (70B)** และระบบ **RAG (Retrieval-Augmented Generation)**
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Llama 3.3 (70B) Engine:** วิเคราะห์ Sentiment และร่างคำตอบภาษาไทยที่สละสลวยผ่าน Groq API
+- **Dynamic RAG System:** ดึงตัวอย่างการตอบที่เคยมีอยู่แล้วของแต่ละแบรนด์มาสอน AI แบบ Real-time เพื่อคุมโทนเสียงให้แม่นยำ
+- **Multi-Brand Support:** รองรับการจัดการหลายร้านพร้อมกัน (เช่น คาเฟ่, ร้านอาหารเหนือ, ร้านอาหารทะเล) โดยมีบุคลิกที่แตกต่างกัน
+- **Knowledge Base Manager:** หน้าจอสำหรับ "สอนงาน AI" โดยการเพิ่ม/ลบ ตัวอย่างรีวิวและคำตอบได้โดยตรงจาก UI
+- **Staff Approval Workflow:** ระบบ Dashboard ให้พนักงานตรวจสอบ แก้ไข และอนุมัติคำตอบก่อนส่งจริง
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Setup & Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Environment Variables:**
+   สร้างไฟล์ `.env.local` และเพิ่ม Groq API Key:
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
 
-## Learn More
+3. **Run Development Server:**
+   ```bash
+   npm run dev
+   ```
+   เข้าใช้งานได้ที่ [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/api/auto-reply`: หัวใจหลักของระบบ AI (Llama 3.3 + RAG)
+- `lib/brand-manager.ts`: ระบบจัดการข้อมูลร้านค้าและการจัดกลุ่มรีวิว
+- `data/brand-config.json`: คลังข้อมูล RAG (ตัวอย่างการตอบของแต่ละแบรนด์)
+- `data/brand-list.json`: รายชื่อแบรนด์และบุคลิก (Persona)
+- `app/page.tsx`: หน้า Dashboard หลักสำหรับจัดการทุกอย่าง
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📘 Documentation
 
-## Deploy on Vercel
+สำหรับรายละเอียดทางเทคนิคเชิงลึกและการบำรุงรักษาระบบ โปรดอ่าน:
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) - คู่มือการพัฒนาและโครงสร้าง API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*โปรเจกต์นี้พัฒนาขึ้นเพื่อเพิ่มประสิทธิภาพในการตอบกลับลูกค้าอย่างมืออาชีพและรวดเร็ว*

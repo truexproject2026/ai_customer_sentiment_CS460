@@ -59,7 +59,7 @@ export default function ResultCard({
         <div>
           <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
             <MessageSquare size={14} />
-            Customer Review
+            ความเห็นจากลูกค้า (Customer Review)
           </label>
           <div className="p-4 bg-slate-50 rounded-xl text-slate-800 text-sm leading-relaxed whitespace-pre-wrap border border-slate-100 max-h-60 overflow-y-auto">
             {comment}
@@ -69,7 +69,7 @@ export default function ResultCard({
         <div className="flex items-center gap-4 py-2 border-y border-slate-50">
           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
             <TrendingUp size={14} className="text-blue-500" />
-            <span>Confidence:</span>
+            <span>AI Confidence Level:</span>
             <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden inline-block align-middle mx-1 border border-slate-50">
               <div 
                 className={`h-full transition-all duration-1000 ${
@@ -86,7 +86,7 @@ export default function ResultCard({
           <div className="flex items-center justify-between mb-2">
             <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
               <ShieldCheck size={14} className="text-green-500" />
-              Draft Response
+              ร่างคำตอบจาก AI (Draft Reply)
             </label>
             {reasoning && (
               <button 
@@ -96,7 +96,7 @@ export default function ResultCard({
                 }`}
               >
                 <TrendingUp size={12} />
-                {showReasoning ? "ซ่อนการวัดผล" : "ดูผลการวิเคราะห์ AI"}
+                {showReasoning ? "ซ่อนการวิเคราะห์" : "ดูผลวิเคราะห์ (Explainable AI)"}
               </button>
             )}
           </div>
@@ -104,7 +104,7 @@ export default function ResultCard({
             value={editedReply}
             onChange={(e) => setEditedReply(e.target.value)}
             className="w-full p-4 border border-slate-200 bg-white rounded-xl text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all min-h-[120px] resize-y"
-            placeholder="พิมพ์คำตอบที่ต้องการแก้ไข..."
+            placeholder="คุณสามารถแก้ไขคำตอบได้ที่นี่..."
           />
           
           {showReasoning && reasoning && (
@@ -118,7 +118,7 @@ export default function ResultCard({
                   </div>
                 </div>
                 <div className="bg-white p-2.5 rounded-lg border border-slate-100 shadow-sm">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">AI Confidence</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Confidence Score</span>
                   <span className={`text-xs font-bold ${confidence > 0.8 ? "text-green-600" : "text-amber-600"}`}>
                     {(confidence * 100).toFixed(1)}% Accuracy
                   </span>
@@ -128,7 +128,7 @@ export default function ResultCard({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-slate-700">
                   <Lightbulb size={14} className="text-amber-500 fill-amber-100" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">เหตุผลในการร่างคำตอบ</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">AI Reasoning (เหตุผลเบื้องหลัง)</span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium pl-5 border-l-2 border-slate-200 ml-1.5">
                   {reasoning}
@@ -144,17 +144,17 @@ export default function ResultCard({
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors"
           >
             <X size={16} />
-            Reject
+            ไม่ใช้งาน (Reject)
           </button>
           <button
             onClick={handleApprove}
             disabled={isApproving}
             className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-blue-600 disabled:opacity-50 transition-all shadow-lg shadow-slate-200"
           >
-            {isApproving ? "Processing..." : (
+            {isApproving ? "กำลังดำเนินการ..." : (
               <>
                 <Check size={16} />
-                Approve & Post
+                อนุมัติคำตอบ (Approve)
               </>
             )}
           </button>

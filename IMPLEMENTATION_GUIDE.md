@@ -1,258 +1,97 @@
-# 🤖 AI Customer Sentiment & Auto Reply System
+# 📘 AI Sentiment & Auto-Reply: Technical Guide
 
-ระบบวิเคราะห์ความรู้สึกของลูกค้าและร่างคำตอบอัตโนมัติ ตามบุคลิกของแบรนด์
+This guide explains how the system works and how to maintain its high-performance AI capabilities.
 
-## 🎯 Workflow
+## 🛠 Prerequisites & Setup
 
-```
-Customer Comment 
-    ↓
-AI Sentiment Analysis + RAG (Retrieval-Augmented Generation)
-    ↓
-Generate Draft Reply (with Brand Personality)
-    ↓
-Staff Review & Approval
-    ↓
-Save to Database
-```
+### 1. API Keys
+The system requires a **Groq API Key** for the Llama 3.3 model.
+- Create a key at [console.groq.com](https://console.groq.com/).
+- Add it to your `.env.local` file:
+  ```env
+  GROQ_API_KEY=your_key_here
+  ```
 
-## 📁 Project Structure
-
-```
-data/
-├── brand-config.json     # Brand personality & examples
-├── sample_reviews.json   # Sample dataset for testing
-└── approved_replies.json # Saved approved replies
-
-app/
-├── api/
-│   ├── auto-reply/route.ts        # AI generate reply
-│   ├── dataset-manager/route.ts   # Fetch reviews from Wongnai
-│   ├── sentiment-analysis/route.ts # Sentiment analysis
-│   └── staff-approval/route.ts    # Save approved replies
-├── components/
-│   └── ResultCard.tsx    # Approval UI component
-└── page.tsx              # Main dashboard
-
-lib/
-└── rag-engine.ts         # Vector embedding & RAG
-```
-
-## 🚀 Setup & Run
-
+### 2. Dependencies
 ```bash
-# Install dependencies
 npm install
-
-# Add environment variables (.env.local)
-HF_TOKEN=your_huggingface_token
-
-# Run development server
-npm run dev
-
-# Open http://localhost:3000
 ```
-
-## ⚙️ Configuration
-
-### 1. **Customize Brand Personality**
-
-Edit `data/brand-config.json`:
-
-```json
-{
-  "brand": {
-    "name": "Your Brand Name",
-    "personality": "Your brand personality description",
-    "tone": "Speech style and tone",
-    "values": ["core values"],
-    "examples": [
-      {
-        "review": "Customer review",
-        "reply": "Ideal admin reply"
-      }
-    ]
-  }
-}
-```
-
-### 2. **Add More Training Examples**
-
-- Add more review-reply pairs in `brand-config.json` → `examples`
-- The system uses vector embeddings (all-MiniLM-L6-v2) to find similar examples
-- More diverse examples = Better responses
-
-## 📊 Data Sources
-
-### Option 1: Wongnai Dataset (Built-in)
-
-```typescript
-// Fetch from Wongnai via Hugging Face
-GET /api/dataset-manager
-```
-
-### Option 2: Custom Dataset
-
-**From CSV/JSON:**
-```typescript
-// Add to sample_reviews.json
-// Then import programmatically in /api/dataset-manager
-```
-
-**From Social Media:**
-1. Copy comments from Facebook/Instagram
-2. Paste into the custom input field in UI
-3. AI analyzes and suggests reply
-
-**From Kaggle:**
-- Search "Thai Sentiment" or "Restaurant Reviews"
-- Convert to format: `{ review: "", reply: "" }`
-- Add to `brand-config.json`
-
-## 💾 Approval Workflow
-
-1. **AI Drafts** → `sentiment`, `reply`, `confidence`
-2. **Staff Edits** → Can modify reply if needed
-3. **Staff Approves** → Saved to `approved_replies.json`
-4. **Database Sync** → (Optional) Send to backend
-
-## 🔧 Key Features
-
-### ✅ Sentiment Analysis
-- AI-powered using Qwen2-1.5B model
-- Returns: Positive, Neutral, Negative
-- Includes confidence score
-
-### ✅ Brand-Consistent Replies
-- RAG retrieves similar examples
-- Uses brand personality in prompt
-- Maintains consistent tone
-
-### ✅ Staff Approval System
-- Edit draft replies before posting
-- Track approval status
-- Save audit trail
-
-### ✅ Multi-language Support
-- Thai comments ✓
-- English comments ✓
-- Thai responses ✓
-
-## 🔌 API Endpoints
-
-### POST `/api/auto-reply`
-Analyze comment and generate reply
-
-```bash
-curl -X POST http://localhost:3000/api/auto-reply \
-  -H "Content-Type: application/json" \
-  -d '{"comment":"กาแฟอร่อยมากค่ะ"}'
-```
-
-Response:
-```json
-{
-  "sentiment": "Positive",
-  "reply": "ดีใจมากค่ะที่ชอบกาแฟ...",
-  "confidence": 0.95,
-  "status": "pending",
-  "timestamp": "2024-04-07T10:30:00Z"
-}
-```
-
-### GET `/api/dataset-manager`
-Fetch sample reviews from Wongnai
-
-### POST `/api/staff-approval`
-Save approved reply
-
-```bash
-curl -X POST http://localhost:3000/api/staff-approval \
-  -H "Content-Type: application/json" \
-  -d '{
-    "comment": "Original comment",
-    "reply": "Approved reply",
-    "sentiment": "Positive"
-  }'
-```
-
-## 🧠 How RAG Works
-
-1. **Embedding** 
-   - Convert user comment to vector (384-d)
-   - Use `Xenova/all-MiniLM-L6-v2` model
-
-2. **Similarity Search**
-   - Calculate cosine similarity with training examples
-   - Retrieve top 3 most similar comments
-
-3. **Context Injection**
-   - Include similar examples in AI prompt
-   - AI learns the brand's reply style
-
-4. **Response Generation**
-   - Qwen2 generates reply based on learned style
-   - Output formatted as JSON
-
-## 📈 Next Steps
-
-### To Improve Results:
-
-1. **Add More Examples** (20-50 per brand)
-   - Diverse sentiments
-   - Different comment types
-   - Various reply scenarios
-
-2. **Collect Real Data**
-   ```bash
-   # Extract from Wongnai (API endpoint)
-   # Extract from Facebook/Instagram scraper
-   # Manually curate best examples
-   ```
-
-3. **Fine-tune Model** (Optional)
-   - Advanced: Train custom sentiment classifier
-   - Or use larger model: Qwen2-7B
-
-4. **Database Integration**
-   - Replace `approved_replies.json` with PostgreSQL
-   - Track metrics: approval rate, response time, etc.
-
-## 🐛 Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| AI always returns default reply | Check HF_TOKEN, check model response in console logs |
-| Replies don't match brand tone | Add more diverse examples to `brand-config.json` |
-| Slow responses | Model loading takes time on first run; caching improves subsequent runs |
-| Thai characters garbled | Ensure UTF-8 encoding in JSON files |
-
-## 📝 Example Usage
-
-```bash
-# 1. Start server
-npm run dev
-
-# 2. Test with custom comment
-# UI: Type "เครื่องดื่มเย็นๆ ทำให้สดชื่น" → Analyze
-
-# 3. Review AI response
-# Sentiment: Positive
-# Reply: [AI-generated Thai reply]
-
-# 4. Staff approves/edits
-# Click "Approve" or edit & then approve
-
-# 5. Saved to approved_replies.json
-```
-
-## 📚 Resources
-
-- [all-MiniLM-L6-v2 Embeddings](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
-- [Qwen2 Model](https://huggingface.co/Qwen/Qwen2-1.5B-Instruct)
-- [Wongnai Dataset](https://huggingface.co/datasets/iamwarint/wongnai-restaurant-review)
-- [Building RAG Systems](https://huggingface.co/docs/transformers/tasks/text_generation)
 
 ---
 
-**Questions?** Check console logs for debugging info
+## 🧠 How the AI Engine Works
+
+### 1. Request Flow
+1. **Frontend** sends a customer comment and a `venueId` to `/api/auto-reply`.
+2. **Backend** fetches the brand's personality and RAG examples from `data/brand-config.json`.
+3. **LLM Prompting:** A structured prompt is built containing:
+   - **System Role:** Professional admin with empathy.
+   - **Brand Context:** Personality, Tone, and Area.
+   - **RAG Examples:** 5 similar past review-reply pairs.
+   - **Customer Input:** The new review to analyze.
+4. **Processing:** Llama 3.3 (70B) generates a JSON response.
+5. **Sanitization:** The `enforceReplyStyle` function cleans the text (e.g., ensuring polite Thai particles).
+
+### 2. RAG (Retrieval-Augmented Generation)
+The RAG system ensures the AI stays "on-brand" by looking at historical data:
+- **Storage:** Data is kept in `data/brand-config.json` under `brands[venueId].examples`.
+- **Retrieval:** When a review comes in, the system retrieves these examples to show the AI how this specific brand usually responds.
+
+### 3. Fallback Mechanism
+If Groq API fails or returns an error:
+- The system switches to `lib/trainingDataset.ts`.
+- Uses a local keyword-based sentiment analyzer.
+- Generates a template-based reply from the local dataset.
+
+---
+
+## 🏢 Brand Management
+
+### Adding a New Brand
+1. **Define the Identity:** Add a new entry in `data/brand-list.json`:
+   ```json
+   {
+     "id": "new-shop",
+     "name": "New Shop Name",
+     "area": "Siam",
+     "tagline": "The best place for X",
+     "personality": "Professional yet friendly",
+     "tone": "Warm and helpful",
+     "keywords": ["pizza", "pasta"]
+   }
+   ```
+2. **Initialize the Brain:** Add a matching entry in `data/brand-config.json` with at least 3-5 example review/reply pairs.
+
+---
+
+## 🖥 Dashboard Features
+
+### Knowledge Base (AI Training)
+You can train the AI in real-time:
+- Open the **"สอนงาน AI"** modal in the dashboard.
+- Add a Review and its "Ideal Reply".
+- This data is saved instantly to the RAG database, making the AI smarter for the next similar review.
+
+### Dataset Management
+- **Hugging Face:** Fetches real reviews from the Wongnai dataset.
+- **Custom Upload:** Upload a CSV or JSON file containing `review_body` to test the AI on your own business data.
+
+---
+
+## 🔧 Troubleshooting
+
+| Problem | Cause | Solution |
+| :--- | :--- | :--- |
+| AI returns "Error" | API Key missing or expired | Check `.env.local` and Groq console. |
+| Reply tone is wrong | Weak RAG data | Add better examples via the "สอนงาน AI" modal. |
+| Wrong brand selected | Keyword mismatch | Update the `keywords` array in `brand-list.json`. |
+| UI not updating | Cache issue | Refresh the page; the dashboard uses `useState` for results. |
+
+---
+
+## 📝 API Endpoints
+
+- `POST /api/auto-reply`: Core analysis engine.
+- `GET /api/brand-profiles`: List all active brands.
+- `POST /api/knowledge-base`: Add a new training example.
+- `GET /api/dataset-manager`: Fetch reviews from various sources.

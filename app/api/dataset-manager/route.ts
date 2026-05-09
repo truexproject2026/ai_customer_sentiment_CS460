@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import sampleReviews from "@/data/sample_reviews.json";
 import { getVenueById, rowMatchesVenue, rowIndexMatchesVenue } from "@/lib/brand-manager";
+import { getCustomReviews } from "@/lib/kv-service";
+import sampleReviews from "@/data/sample_reviews.json";
 
 type DatasetRow = {
   row?: {
@@ -39,10 +38,8 @@ export async function GET(req: Request) {
   // Handle Custom Dataset Source
   if (source === "custom") {
     try {
-      const customPath = path.join(process.cwd(), "data/custom_reviews.json");
-      if (fs.existsSync(customPath)) {
-        const content = fs.readFileSync(customPath, "utf-8");
-        const all = JSON.parse(content) as { comment: string }[];
+      const all = await getCustomReviews();
+      if (all && all.length > 0) {
         const chunk = all.slice(cursor, cursor + pageSize);
         
         return NextResponse.json({

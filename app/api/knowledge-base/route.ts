@@ -1,17 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const brandPath = path.join(process.cwd(), "data/brand-config.json");
-
-function readBrand() {
-  const content = fs.readFileSync(brandPath, "utf-8");
-  return JSON.parse(content);
-}
-
-function writeBrand(data: any) {
-  fs.writeFileSync(brandPath, JSON.stringify(data, null, 2), "utf-8");
-}
+import { getBrandConfig, saveBrandConfig } from "@/lib/kv-service";
 
 export async function GET(req: Request) {
   try {
@@ -22,11 +10,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "venueId is required" }, { status: 400 });
     }
 
-    const data = readBrand();
+    const data = await getBrandConfig();
     const venueData = data.brands[venueId] || { examples: [] };
     
     return NextResponse.json(venueData.examples || []);
   } catch (error) {
+    console.error("GET Error:", error);
     return NextResponse.json({ error: "Failed to load training data" }, { status: 500 });
   }
 }
@@ -38,16 +27,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "venueId, review, and reply are required" }, { status: 400 });
     }
 
-    const data = readBrand();
+    const data = await getBrandConfig();
     if (!data.brands[venueId]) {
       data.brands[venueId] = { examples: [] };
     }
     
     data.brands[venueId].examples.unshift({ review, reply });
-    writeBrand(data);
+    await saveBrandConfig(data);
 
     return NextResponse.json({ success: true, examples: data.brands[venueId].examples });
   } catch (error) {
+    console.error("POST Error:", error);
     return NextResponse.json({ error: "Failed to add training data" }, { status: 500 });
   }
 }
@@ -59,16 +49,17 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "venueId and index are required" }, { status: 400 });
     }
 
-    const data = readBrand();
+    const data = await getBrandConfig();
     
     if (data.brands[venueId] && data.brands[venueId].examples && data.brands[venueId].examples[index]) {
       data.brands[venueId].examples.splice(index, 1);
-      writeBrand(data);
+      await saveBrandConfig(data);
       return NextResponse.json({ success: true, examples: data.brands[venueId].examples });
     }
     
     return NextResponse.json({ error: "Example not found" }, { status: 404 });
   } catch (error) {
+    console.error("DELETE Error:", error);
     return NextResponse.json({ error: "Failed to delete training data" }, { status: 500 });
   }
 }

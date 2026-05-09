@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { getApprovedReplies, saveApprovedReplies } from "@/lib/kv-service";
 
 type ApprovedReply = {
   comment: string;
@@ -26,26 +25,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save to approved replies file with atomic write
-    const filePath = path.join(process.cwd(), "data", "approved_replies.json");
-    const dir = path.dirname(filePath);
-
-    // Ensure directory exists
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    let approved: ApprovedReply[] = [];
-    if (fs.existsSync(filePath)) {
-      try {
-        const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-        if (Array.isArray(data)) {
-          approved = data;
-        }
-      } catch (parseError) {
-        console.warn("Warning: Could not parse existing approvals file:", parseError);
-      }
-    }
+    const approved = await getApprovedReplies();
 
     const newApproval: ApprovedReply = {
       comment,
@@ -55,11 +35,7 @@ export async function POST(req: Request) {
     };
 
     approved.push(newApproval);
-
-    // Write to temp file first, then rename (atomic)
-    const tempPath = `${filePath}.tmp`;
-    fs.writeFileSync(tempPath, JSON.stringify(approved, null, 2));
-    fs.renameSync(tempPath, filePath);
+    await saveApprovedReplies(approved);
 
     return NextResponse.json({
       success: true,

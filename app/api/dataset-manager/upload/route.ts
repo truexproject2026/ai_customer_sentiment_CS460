@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { saveCustomReviews } from "@/lib/kv-service";
 
 export async function POST(req: Request) {
   try {
@@ -31,20 +30,22 @@ export async function POST(req: Request) {
       }
     } else if (fileName.endsWith(".csv")) {
       const lines = content.split(/\r?\n/);
-      const headers = lines[0].split(",");
-      const commentIndex = headers.findIndex(h => 
-        ["comment", "review", "text", "body"].includes(h.trim().toLowerCase())
-      );
+      if (lines.length > 0) {
+        const headers = lines[0].split(",");
+        const commentIndex = headers.findIndex(h => 
+          ["comment", "review", "text", "body"].includes(h.trim().toLowerCase())
+        );
 
-      // Simple fallback if no clear header matches: use the first column or entire line
-      const targetIdx = commentIndex >= 0 ? commentIndex : 0;
+        // Simple fallback if no clear header matches: use the first column or entire line
+        const targetIdx = commentIndex >= 0 ? commentIndex : 0;
 
-      for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const cols = lines[i].split(",");
-        const comment = cols[targetIdx]?.replace(/^"|"$/g, "").trim();
-        if (comment) {
-          reviews.push({ comment });
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          const cols = lines[i].split(",");
+          const comment = cols[targetIdx]?.replace(/^"|"$/g, "").trim();
+          if (comment) {
+            reviews.push({ comment });
+          }
         }
       }
     } else {
@@ -58,13 +59,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No valid reviews found in file" }, { status: 400 });
     }
 
-    // Save to data/custom_reviews.json
-    const dataDir = path.join(process.cwd(), "data");
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir);
+    // Save to KV instead of local file
+    const success = await saveCustomReviews(reviews);
+    if (!success) {
+      return NextResponse.json({ error: "Failed to save reviews to cloud storage" }, { status: 500 });
     }
-    const outputPath = path.join(dataDir, "custom_reviews.json");
-    fs.writeFileSync(outputPath, JSON.stringify(reviews, null, 2), "utf-8");
 
     return NextResponse.json({
       success: true,
